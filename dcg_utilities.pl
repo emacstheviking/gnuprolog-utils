@@ -14,18 +14,27 @@
 %%--------------------------------------------------------------------
 %% dcg_skipws//0.
 %%
-%% Skips optional whitespace. Depends on dcg_skipws1//1 to determine
-%% what characters are deemed to be non-important to the JSON parsing.
+%% Skips optional whitespace. Depends on dcg_skipws1//1.
 %%--------------------------------------------------------------------
 dcg_skipws --> dcg_skipws1, dcg_skipws, !.
 dcg_skipws --> dcg_skipws1, !.
 dcg_skipws --> [].
 
 
-%% DCG rules for token extraction from a help entry line
+%%--------------------------------------------------------------------
+%% dcg_scan_util//1.
+%% Used to scan until a certain character is encountered.
+%%--------------------------------------------------------------------
 dcg_scan_until(Chr) --> [C], {\+ C=Chr}, scan_until(Chr).
-dcg_scan_until(Chr) --> [Chr].
+dcg_scan_until(Chr) --> [Chr]. %% ? [] should work!
 
+
+%%--------------------------------------------------------------------
+%% dcg_next_token//1.
+%%
+%% Scans and consumes the next non-whitespace bounded token
+%% sequence. The returned data is a character code list.
+%%--------------------------------------------------------------------
 dcg_next_token(T)        --> dcg_skipws, dcg_next_token([], T).
 dcg_next_token(Acc, Out) --> " ", {reverse(Acc, Out)}.
 dcg_next_token(Acc, Out) --> [C], dcg_next_token([C|Acc], Out).
