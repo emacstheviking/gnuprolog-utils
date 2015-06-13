@@ -76,3 +76,16 @@ loadfile(Stream, Acc, Out) :-
 loadfile(Stream, Acc, Out) :-
 	get_code(Stream, Chr),
 	loadfile(Stream, [Chr | Acc], Out).
+
+
+%%--------------------------------------------------------------------
+%% cat(+Filename).
+%%
+%% Simple file dumper. Filename must be the name of the file as an
+%% atom. The content of the file is read and then written as a string
+%% to stdout. If the file fails to read or the string contains
+%% something that makes the format/2 bork then it will fail.
+%%--------------------------------------------------------------------
+cat(Filename) :-
+	loadfile(Filename, Buf),
+	format("~n--begin ~w--~n~s~n--end--", [Filename, Buf]).
