@@ -61,11 +61,12 @@ dcg_slurp_until(Chr, Acc, Out) -->
 %% Scans and consumes the next non-whitespace bounded token
 %% sequence. The returned data is a character code list.
 %%--------------------------------------------------------------------
-dcg_next_token(T) --> dcg_skipws, dcg_next_token([], T).
+dcg_next_token(T) --> dcg_next_token([], T).
 
 %% NOTE: We pushback the whitespace character W in order to maintain
 %% the context for the calling parser! Very VERY important!
-dcg_next_token(Acc, Out), [W] --> dcg_skipws1(W), {reverse(Acc, Out)}.
+dcg_next_token(Acc, Out), [W] -->
+	dcg_skipws1(W), {reverse(Acc, Out)}.
 
 dcg_next_token(Acc, Out) --> [C], dcg_next_token([C|Acc], Out).
 dcg_next_token(Acc, Out) --> [], {reverse(Acc, Out)}.
@@ -79,7 +80,7 @@ dcg_next_token(Acc, Out) --> [], {reverse(Acc, Out)}.
 %% considered to be whitespace. Second one returns the character in
 %% case push-back is required.
 %%--------------------------------------------------------------------
-dcg_skipws1 --> [C], { C=<32 ; C>=127}.
+dcg_skipws1    --> [C], { C=<32 ; C>=127}.
 dcg_skipws1(C) --> [C], { C=<32 ; C>=127}.
 
 
@@ -103,7 +104,7 @@ dcg_string(Str) --> [34], dcg_strget([], Tmp), [34], !, {Str = str(Tmp)}.
 %% accumulator for presentation.
 %%--------------------------------------------------------------------
 dcg_strget(Acc, Out) -->
-	[92, Chr],
+	[92, Chr],		% Backslash something
 	dcg_strget([Chr, 92 | Acc], Out).
 
 dcg_strget(Acc, Out) -->
