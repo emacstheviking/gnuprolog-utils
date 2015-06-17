@@ -37,8 +37,22 @@ dcg_lf --> "\n".
 %% dcg_scan_util//1.
 %% Used to scan until a certain character is encountered.
 %%--------------------------------------------------------------------
-dcg_scan_until(Chr) --> [C], {\+ C=Chr}, scan_until(Chr).
 dcg_scan_until(Chr) --> [Chr]. %% ? [] should work!
+dcg_scan_until(Chr) --> [C], {\+ C=Chr}, dcg_scan_until(Chr).
+
+
+
+dcg_slurp_until(Chr, Out) -->
+	dcg_slurp_until(Chr, [], Out).
+
+dcg_slurp_until(Chr, Acc, Out) -->
+	[C],
+	{\+ C=Chr},
+	dcg_slurp_until(Chr, [C | Acc], Out).
+
+dcg_slurp_until(Chr, Acc, Out) -->
+	[Chr], %% ? [] should work!
+	{reverse(Acc, Out)}.
 
 
 %%--------------------------------------------------------------------

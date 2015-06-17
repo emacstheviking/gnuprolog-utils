@@ -89,3 +89,12 @@ loadfile(Stream, Acc, Out) :-
 cat(Filename) :-
 	loadfile(Filename, Buf),
 	format("~n--begin ~w--~n~s~n--end--", [Filename, Buf]).
+
+
+%%--------------------------------------------------------------------
+%% writestr(+character_codes).
+%%
+%% Term helper, it assumes the list is a printable string.
+%%--------------------------------------------------------------------
+writestr(S) :- format("~s", [S]).
+
