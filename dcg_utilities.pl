@@ -45,14 +45,15 @@ dcg_scan_until(Chr) --> [C], {\+ C=Chr}, dcg_scan_until(Chr).
 dcg_slurp_until(Chr, Out) -->
 	dcg_slurp_until(Chr, [], Out).
 
+
+dcg_slurp_until(Chr, Acc, Out), [Chr] -->
+	[Chr],
+	{reverse(Acc, Out)}.
+
 dcg_slurp_until(Chr, Acc, Out) -->
 	[C],
 	{\+ C=Chr},
 	dcg_slurp_until(Chr, [C | Acc], Out).
-
-dcg_slurp_until(Chr, Acc, Out) -->
-	[Chr], %% ? [] should work!
-	{reverse(Acc, Out)}.
 
 
 %%--------------------------------------------------------------------
@@ -62,6 +63,7 @@ dcg_slurp_until(Chr, Acc, Out) -->
 %% sequence. The returned data is a character code list.
 %%--------------------------------------------------------------------
 dcg_next_token(T) --> dcg_next_token([], T).
+dcg_next_tokenws(T) --> dcg_skipws, dcg_next_token([], T).
 
 %% NOTE: We pushback the whitespace character W in order to maintain
 %% the context for the calling parser! Very VERY important!
