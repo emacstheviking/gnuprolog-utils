@@ -114,7 +114,7 @@ list_find(K, [_ | T], V)    :- list_find(K, T, V).
 %%
 %% Hunts for a key in a list. Default returned if no matching element.
 %%--------------------------------------------------------------------
-list_find_def(K, [], Def, Def).
+list_find_def(_, [], Def, Def).
 list_find_def(K, [K-V | _], V, _)  :- !.
 list_find_def(K, [_ | T], V, Def)    :- list_find_def(K, T, V, Def).
 
