@@ -118,3 +118,49 @@ list_find_def(_, [], Def, Def).
 list_find_def(K, [K-V | _], V, _)  :- !.
 list_find_def(K, [_ | T], V, Def)    :- list_find_def(K, T, V, Def).
 
+
+%%--------------------------------------------------------------------
+%% base64/2
+%%
+%% If In is unbound then Out MUST contain a codes_list, and on exit In
+%% will have been unified with a Base64 encoded string.
+%%
+%% The converse is true for In / Out i.e. Out will be unified with the
+%% original input string.
+%%--------------------------------------------------------------------
+base64([], []).
+base64(In, Out) :-
+	list(In), var(Out),
+	base64_encode(In, [], Out).
+
+base64_encode([], Acc, Out) :- reverse(Acc, Out).
+
+base64_encode([A,B,C|Rest], Acc, Out) :-
+	base64_encode_seq(A, B, C, E1, E2, E3, E4),
+	base64_encode(Rest, [E4, E3, E2, E1 | Acc], Out).
+
+base64_encode([A,B|Rest], Acc, Out) :-
+	base64_encode_seq(A, B, 0, E1, E2, E3, _),
+	base64_encode(Rest, [0x3d, E3, E2, E1 | Acc], Out).
+
+base64_encode([A|Rest], Acc, Out) :-
+	base64_encode_seq(A, 0, 0, E1, E2, _, _),
+	base64_encode(Rest, [0x3d, 0x3d, E2, E1 | Acc], Out).
+
+
+base64_encode_seq(I1, I2, I3, O1, O2, O3, O4) :-
+	Val is (I1 << 16) + (I2 << 8) + I3,
+	C1 is (Val /\ 0xFC0000) >> 18,
+	C2 is (Val /\ 0x3F000) >> 12,
+	C3 is (Val /\ 0xFC0) >> 6,
+	C4 is  Val /\ 0x3F,
+	base64_encode_char(C1, O1),
+	base64_encode_char(C2, O2),
+	base64_encode_char(C3, O3),
+	base64_encode_char(C4, O4).
+
+base64_encode_char(Val, ASCII) :-
+	Index is Val + 1,
+	nth(Index,
+	    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+	    ASCII).
