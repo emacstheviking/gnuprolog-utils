@@ -1,4 +1,4 @@
-:- include(utilities).
+:- include('../utilities').
 :- include(testing_framework).
 
 test_encode_three_characters :- base64("Man", X), tf_equals("TWFu", X).
